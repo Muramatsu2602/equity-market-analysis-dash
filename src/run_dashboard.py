@@ -1,6 +1,5 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 
@@ -11,17 +10,40 @@ from analysis import calculate_moving_average, calculate_exponential_moving_aver
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    dcc.Input(id='stock-input', type='text', value='AAPL'),
-    dcc.DatePickerRange(
-        id='date-picker',
-        start_date='2023-01-01',
-        end_date='2023-01-31'
-    ),
-    dcc.Graph(id='stock-graph'),
-    dcc.Graph(id='ema-graph'),
-    dcc.Graph(id='rsi-graph'),
-    dcc.Graph(id='bollinger-graph')
-])
+    html.H1("Equity Market Analysis for Institutional Equity Division - Strats"),
+    html.H2("Created by: Pedro Muramatsu"),
+    html.Br(),
+    html.Div([
+        html.H3("Stock Symbol Input"),
+        dcc.Input(id='stock-input', type='text', value='AAPL', style={'width': '300px'}),
+        html.H3("Select Date Range"),
+        dcc.DatePickerRange(
+            id='date-picker',
+            start_date='2023-01-01',
+            end_date='2023-01-31'
+        ),
+    ]),
+    html.Div([
+        html.H3("Stock Candlestick Chart"),
+        html.P("This chart represents the stock's price movements over time with candlestick markers indicating the open, high, low, and close prices each day."),
+        dcc.Graph(id='stock-graph'),
+    ]),
+    html.Div([
+        html.H3("Exponential Moving Average (EMA)"),
+        html.P("The EMA graph shows the stock's closing price along with its exponential moving average, which gives more weight to recent prices and reacts faster to price changes."),
+        dcc.Graph(id='ema-graph'),
+    ]),
+    html.Div([
+        html.H3("Relative Strength Index (RSI)"),
+        html.P("The RSI graph indicates whether the stock is potentially overbought (over 70) or oversold (under 30), helping predict the potential reversal points."),
+        dcc.Graph(id='rsi-graph'),
+    ]),
+    html.Div([
+        html.H3("Bollinger Bands"),
+        html.P("This graph plots two standard deviations away from a simple moving average. It's useful for identifying whether prices are high or low on a relative basis."),
+        dcc.Graph(id='bollinger-graph'),
+    ])
+], style={'fontFamily': 'Arial', 'padding': '20px'})
 
 @app.callback(
     [Output('stock-graph', 'figure'),
@@ -77,4 +99,7 @@ def update_graphs(stock_symbol, start_date, end_date):
         )
     ])
 
-    return candlestick_fig, ema_fig, rs
+    return candlestick_fig, ema_fig, rsi_fig, bollinger_fig
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
